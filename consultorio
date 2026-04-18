@@ -1,0 +1,110 @@
+def cadastrar_paciente(pacientes):
+    print("\n=== CADASTRO DE PACIENTE ===")
+
+    nome = input("Nome do paciente: ").strip()
+    if nome == "":
+        print("Erro: o nome não pode estar vazio!")
+        return
+
+    # Tratamento de erro para idade
+    try:
+        idade = int(input("Idade: "))
+        if idade <= 0:
+            print("Erro: idade deve ser maior que zero!")
+            return
+    except ValueError:
+        print("Erro: idade precisa ser um número inteiro!")
+        return
+
+    telefone = input("Telefone: ").strip()
+
+    paciente = {
+        "nome": nome,
+        "idade": idade,
+        "telefone": telefone
+    }
+
+    pacientes.append(paciente)
+    print("Paciente cadastrado com sucesso!")
+
+
+def ver_estatisticas(pacientes):
+    print("\n=== ESTATÍSTICAS ===")
+
+    if len(pacientes) == 0:
+        print("Nenhum paciente cadastrado!")
+        return
+
+    total = len(pacientes)
+    soma_idades = sum(p["idade"] for p in pacientes)
+    media = soma_idades / total
+
+    # Encontrar mais novo e mais velho
+    mais_novo = min(pacientes, key=lambda p: p["idade"])
+    mais_velho = max(pacientes, key=lambda p: p["idade"])
+
+    print(f"Total de pacientes: {total}")
+    print(f"Idade média: {media:.2f} anos")
+    print(f"Mais novo: {mais_novo['nome']} ({mais_novo['idade']} anos)")
+    print(f"Mais velho: {mais_velho['nome']} ({mais_velho['idade']} anos)")
+
+
+def buscar_paciente(pacientes):
+    print("\n=== BUSCAR PACIENTE ===")
+    nome_busca = input("Digite o nome do paciente: ").strip().lower()
+
+    encontrados = [p for p in pacientes if p["nome"].lower() == nome_busca]
+
+    if encontrados:
+        print("\nPaciente encontrado:")
+        for p in encontrados:
+            print(f"Nome: {p['nome']} | Idade: {p['idade']} | Telefone: {p['telefone']}")
+    else:
+        print("Nenhum paciente encontrado com esse nome.")
+
+
+def listar_pacientes(pacientes):
+    print("\n=== LISTA DE PACIENTES ===")
+
+    if len(pacientes) == 0:
+        print("Nenhum paciente cadastrado.")
+        return
+
+    for i, p in enumerate(pacientes, start=1):
+        print(f"{i}. Nome: {p['nome']} | Idade: {p['idade']} | Telefone: {p['telefone']}")
+
+
+def menu():
+    pacientes = []
+
+    while True:
+        print("\n=== SISTEMA CLÍNICA VIDA+ ===")
+        print("1. Cadastrar paciente")
+        print("2. Ver estatísticas")
+        print("3. Buscar paciente")
+        print("4. Listar todos os pacientes")
+        print("5. Sair")
+
+        try:
+            opcao = int(input("Escolha uma opção: "))
+        except ValueError:
+            print("Erro: digite um número válido!")
+            continue
+
+        if opcao == 1:
+            cadastrar_paciente(pacientes)
+        elif opcao == 2:
+            ver_estatisticas(pacientes)
+        elif opcao == 3:
+            buscar_paciente(pacientes)
+        elif opcao == 4:
+            listar_pacientes(pacientes)
+        elif opcao == 5:
+            print("Encerrando o sistema. Até mais!")
+            break
+        else:
+            print("Opção inválida. Tente novamente!")
+
+
+# Iniciar o programa
+menu()

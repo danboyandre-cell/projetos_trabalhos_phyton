@@ -1,0 +1,78 @@
+# PASSO 1 - Importar bibliotecas e carregar os dados
+
+import tensorflow as tf
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+
+# Carregar dataset Iris do scikit-learn
+iris = load_iris()
+X = iris.data   # características (sépalas e pétalas)
+y = iris.target # rótulos (espécies)
+
+# Criando DataFrame só para visualizar os dados
+df = pd.DataFrame(X, columns=iris.feature_names)
+df["species"] = y
+print(" Primeiras linhas do dataset Iris:")
+print(df.head())
+
+
+
+# PASSO 2 - Pré-processamento
+
+
+# Dividir dados em treino e teste (80% treino, 20% teste)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# Normalizar os dados (muito importante para redes neurais)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+
+# PASSO 3 - Construir o Modelo
+
+
+# Usaremos a API Keras do TensorFlow
+# Rede Neural simples com 2 camadas ocultas
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(10, activation='relu', input_shape=(X_train.shape[1],)), # camada oculta 1
+    tf.keras.layers.Dense(8, activation='relu'),                                   # camada oculta 2
+    tf.keras.layers.Dense(3, activation='softmax')                                 # camada de saída (3 classes)
+])
+
+# Compilar o modelo
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+
+
+# PASSO 4 - Treinar o Modelo
+
+
+history = model.fit(X_train, y_train, epochs=50, validation_split=0.2, verbose=1)
+
+
+# PASSO 5 - Avaliar o Modelo
+
+
+loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+print(f" Precisão no conjunto de teste: {accuracy*100:.2f}%")
+
+
+# PASSO 6 - Fazer Previsões
+
+
+# Exemplo: prever a classe da primeira amostra do conjunto de teste
+sample = X_test[0].reshape(1, -1)
+prediction = model.predict(sample)
+
+predicted_class = np.argmax(prediction)
+print(f" Previsão para a primeira amostra de teste: {iris.target_names[predicted_class]}")
+print(f"Classe real: {iris.target_names[y_test[0]]}")
